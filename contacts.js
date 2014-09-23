@@ -80,20 +80,20 @@ app.ContactView = Backbone.View.extend({
 //
         var formData =  {firstName: first, lastName: last, email:emailVal },
             prev = this.model.previousAttributes();
-        var one = new app.Contact(formData);
-        if(one.isValid()) {
+        var proposedModel = new app.Contact(formData);
+        if(proposedModel.isValid()) {
             this.model.set(formData);
             this.render();
-            _.each(contacts, function (contact) {
-                if (_.isEqual(contact, prev)) {
-                    contacts.splice(_.indexOf(contacts, contact), 1, formData);
-                }
-            });
+//            _.each(contacts, function (contact) {
+//                if (_.isEqual(contact, prev)) {
+//                    contacts.splice(_.indexOf(contacts, contact), 1, formData);
+//                }
+//            });
             this.$el.removeClass('editing');
         }
         else
         {
-            alert(one.validationError);
+            alert(proposedModel.validationError);
         }
     },
     updateOnEnter: function(e){
@@ -136,8 +136,6 @@ app.AppView = Backbone.View.extend({
     //add a new contact
     addContact: function (e) {
         e.preventDefault();
-
-
         var formData = {};
         $("#header").children("input").each(function (i, el) {
             if ($(el).val() !== "") {
@@ -145,12 +143,15 @@ app.AppView = Backbone.View.extend({
                 $(el).val('');
             }
         });
-
-        //update data store
-        contacts.push(formData);
-
-        //re-render select if new type is unknown
-        this.collection.add(new app.Contact(formData));
+        var proposedModel = new app.Contact(formData);
+        if(proposedModel.isValid()) {
+            //update data store
+            contacts.push(formData);
+            //re-render select if new type is unknown
+            this.collection.add(new app.Contact(formData));
+        }
+        else
+            alert(proposedModel.validationError);
     }
 });
 
